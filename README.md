@@ -12,8 +12,10 @@ View a working demo of the project here:
 
 https://youtu.be/f1m22gHIzjs
 
-## Team Members##
+## Team Members  ##
 
 Joey Arbogast
+
 Troy Gamboa
+
 Isaac Sumner
