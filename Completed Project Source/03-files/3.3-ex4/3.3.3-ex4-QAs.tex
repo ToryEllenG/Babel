@@ -1,0 +1,53 @@
+%<*mytag2>
+\begin{questions}[resume,noitemsep,label=\textbf{Q\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {Was the ping successful?  If not, then why (Hint: What did we forget to do?)}
+\end{questions}
+\begin{answers}[resume,noitemsep,label=\textbf{A\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {No.  We needed to tell babel to redistribute.  The wireless clients are not running babel, so therefore babel needs to redistribute these connected devices so that they can talk to one another.  The command redistribute metric 128, is basically like RIP's redistribute connected command.  You can redistribute on certain networks if you wish, but we kept it simple by redistributing everything.}
+\end{answers}
+%</mytag1>
+
+%<*mytag2>
+\begin{questions}[resume,noitemsep,label=\textbf{Q\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {What Happens? Why?}
+\end{questions}
+\begin{answers}[resume,noitemsep,label=\textbf{A\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {The time increases the further we get from the wireless network.  Eventually the destination network becomes unreachable, because the wireless client is to far outside the range of the wireless network.  This is a pretty cool simulation of wireless network.}
+\end{answers}
+%</mytag2>
+
+
+
+%<*mytag3>
+\begin{questions}[resume,noitemsep,label=\textbf{Q\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {Explain What the diversity command is for.}
+\end{questions}
+\begin{answers}[resume,noitemsep,label=\textbf{A\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {According to the babeld man, This option specifies the diversity algorithm to use; true is equivalent to kind 3. The default is false \cite{one}}
+\end{answers}
+%</mytag3>
+
+%<*mytag4>
+\begin{questions}[resume,noitemsep,label=\textbf{Q\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {Explain what the smoothing-half-life command does.}
+\end{questions}
+\begin{answers}[resume,noitemsep,label=\textbf{A\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {This specifies the half-life in seconds of the exponential decay used for smoothing metrics for performing route selection, and is equivalent to the command-line option -M.\cite{one}}
+\end{answers}
+%</mytag4>
+%<*mytag5>
+\begin{questions}[resume,noitemsep,label=\textbf{Q\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {Describe what you see.  What do you notice? Why?}
+\end{questions}
+\begin{answers}[resume,noitemsep,label=\textbf{A\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {We observed the routing table change several times before settling on a route to network 10.0.5.0/24.  It began as 192.172.0.1, switched to 192.168.1.3 and then again to 10.10.10.3.  This is Babel detecting the best quality link to reach the network.}
+\end{answers}
+%</mytag5>
+%<*mytag6>
+\begin{questions}[resume,noitemsep,label=\textbf{Q\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {Describe your observations from the ICMP messages on the Babel/RIP router.}
+\end{questions}
+\begin{answers}[resume,noitemsep,label=\textbf{A\arabic*:},leftmargin=15mm,labelsep=0.1cm,topsep=0pt]
+\item {Figure \ref{fig:Ex4-4} shows that the source IP is changing during the ping.  All of the source IP's are on the n12 router.  This is Babel detecting a better quality link to the route and adjusting.  The other interesting point here is that there is no convergence down time when it selects a different route.  It's instantaneous.}
+\end{answers}
+%</mytag6>

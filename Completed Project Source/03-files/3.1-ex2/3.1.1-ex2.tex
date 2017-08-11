@@ -1,0 +1,69 @@
+\documentclass[main.tex]{subfiles}
+
+
+\begin{document}
+\subsection{Exercise 2: Setting Up a Mesh Network \& Convergence Times }
+\subsubsection{Analysis \& Evidence }
+\paragraph{Step 0: Exercise 2 - Network Diagrams \& Tables}
+\hfill \break
+See Figure \ref{fig:net2} and Table \ref{fig:tbl2} in Section \ref{sec2}
+
+\paragraph{Step 0: Preparation}
+\hfill \break
+
+\noindent We begin by setting up the topology shown in Figure: \ref{fig: }. We did this by creating additional linked clones of the Ubuntu Server VM and 1 more clone of the Ubuntu Desktop VM. Next, we set up each of the VMs with the specified number of interfaces using their /etc/network/interfaces files. When our topology was fully configured, we verified that we had the Babel daemon installed on each of the routers using the \texttt{babeld --version} command. We also verified that the hosts could ping their gateways.
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag1}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag1}
+
+\paragraph{Step 1: Convergence Time in Comparison to RIP}
+\hfill \break
+
+We began this step by executing the following command on babel1, shown in Figure: \ref{fig:Ex2S2_1}
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag200}
+
+We then repeated this command on Babel4, and started Babel on babel2 and babel3 without the \texttt{-C 'redistribute metric 128'} configuration.
+
+Next, we started pinging UbuntuHost2 from UbuntuHost1. Then, we brought down eth2 on babel4. We used the active ping to see how long it took Babel to converge.
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag1}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag2}
+
+Then, we started capturing on the links between babel1 and babels 2, 3, and 4. We then brought eth2 on babel4 back up and observed the captures.
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag201}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag202}
+
+At first all the requests are being sent to babel2 and all the replies are being sent to babel3, but after bringing eth2 on babel4 back up, we see both requests and replies in the 3.0 network between babel1 and babel4.
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag203}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag3}
+
+\paragraph{Step 2: Routing Tables Affecting Traceroutes}
+\hfill \break
+
+We begin this step by verifying the installation of traceroute on Host1. We run traceroute to Host4 and get the results shown in Figure: \ref{fig:Ex2S3_1}
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag300}
+
+Then, we brought down eth2 on babel4 once again and ran traceroute.
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag301}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag4}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag5}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.2-ex2-img]{mtag302}
+
+\paragraph{Step 3: Compare and Contrasting RIP and Babel}
+\hfill \break
+
+In this step we reflected back to lab 2 in order to compar RIPv2 and Babel.
+
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag6}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag7}
+\ExecuteMetaData[\FilePath/3.1-ex2/3.1.3-ex2-QAs]{mytag8}
+
+\subsubsection{Key Learning/Takeaways:} 
+\hfill \break
+\noindent In this exercise we learned about how the network converges when a link goes down in Babel. We also compared these results to our results in Lab 2. From this exercise, we determined that Babel is just as effective as RIP in a wired network. While Babel and RIP have several similarities, Babel offers additional features like wireless routing and IPv6 support by default. In the following exercises we examine the Babel in wireless and hybrid networks
+\end{document}

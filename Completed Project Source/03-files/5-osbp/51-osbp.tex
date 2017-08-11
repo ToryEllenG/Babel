@@ -1,0 +1,22 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+
+\subsection{Observations}
+\paragraph{OpenWrt}
+\hfill \break
+\noindent When configuring the access points with OpenWrt, there were many problems, especially with the GUI that OpenWrt provides. As stated earlier in the report, when attempting to assign 3 different access points with a static IP address, only two of the three actually maintained their address, while the other was not able to be accessed, even after multiple resets. This is where the ASUS firmware restoration tool was used. When editing the configurations through the command line, if there was even a small error, it would be frequent that we would not have access to the access point at all. When configuring the access points for 802.11s, there was no field in the GUI to specify a mesh id. This required an extra step in the lab to enter this manually in the command line. A big problem when completing this lab was reliability of the specific firmware installed on the ASUS RT-N66U Access points. It has been noted by many others in the OpenWrt community that these specific models do not maintain a 5Ghz connection, while maintaining a relatively weak connection when operating at 2.4GHz. 
+
+
+
+\paragraph{CORE}
+\hfill \break
+\noindent We noticed in Exercise 4 Step 3 that when we setup and enabled RIP on the RIP network sometimes the route to 10.0.5.0/24 would not show up.  It seemed that the wireless RIP/BABEL node was not redistributing this route for some reason, even though we could ping from this node to the Babel Wired network.
+
+\noindent CORE is not very well documented, so I had to figure out a lot of things on my own.
+
+\subsection{Suggestions}
+
+\subsection{Best Practices}
+Using Core to simulate wireless nodes.
+
+\end{document}

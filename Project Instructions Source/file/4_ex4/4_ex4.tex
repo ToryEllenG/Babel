@@ -1,0 +1,223 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+\subsection{Exercise 4: Babel/Rip enabled Hybrid Network Architecture}
+\newlist{questions}{enumerate}{1}
+\setlist[questions,1]{label={$\circ$ Q\arabic* -}}
+
+
+
+\subsubsection{Step 0: Preparation}
+
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Next, we are going to create a hybrid mesh network using the virtualization software Common Open Research Emulator (C.O.R.E) hosted by the U.S. Navy and created by Boeing.  C.O.R.E is capable of emulating WIFI down to the physical layer and you can get creative with the 802.11 configuration, changing properties like jitter, transmission power, system noise and many others.
+
+\item  Go to https://downloads.pf.itd.nrl.navy.mil/core/vmware-image/ and select the vcore-4.7.zip file to download the Vmware Image.
+
+\item  After, unzipping, open the image in VMware, give the VM some more processors and around 4 GB of memory and start the VM.
+
+\item The C.O.R.E VM runs a version of Ubuntu called LUbuntu.  We can use things such as aptitude for package installation.
+
+
+\item The routers in C.O.R.E are version of quagga docker and they have babel listed under services, but we were unable to configure and run Babel through the quagga vty shell.  Instead we will download Babeld directly from the Github repository.
+
+\item Ensure git, gcc, wireshark, tcpdump are installed on the Core VM (root password is core).
+\item Install VMWare Tools.
+\item reboot the VM.
+
+\item from your home directory use the command \texttt{git clone \\ https://github.com/jech/babeld} to clone the repository on the system.
+\item Next cd into the babeld directory.  use the command \texttt{make} to compile the babel daemon executable.
+\item Copy the binary file babeld to /usr/sbin/.
+\item Verify that the program works by running the command \texttt{sudo babeld -d1 eth0}.  You should see a debug message.
+
+\item In order to use Wireshark inside CORE, you need to edit the CORE launch configuration so you can use sudo to launch it.
+
+\item cd to the desktop in a terminal, and open CORE in leafpad, \texttt{sudo leafpad CORE}.  Edit the line Exec=... by adding the sudo command after the equals sign.
+
+\item Launch core from the terminal \texttt{sudo ./CORE}
+\item You should now be able to launch Wireshark inside CORE emulator.
+
+
+\end{enumerate}
+
+
+\subsubsection{Step 1:  Setting Up Wired Mesh Network with CORE  } 
+
+
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item After opening the CORE GUI you should see a toolbar on left side of the canvas.
+\item Select the Router icon (fourth button down), and select the first type of router.
+\item Click on the canvas to place the router.  Create 4 total routers
+\item Click the link icon in the left hand toolbar to create links between the routers. Refer to Figure \ref{fig:1} for reference to the link toobar button.
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mtag1}
+\item  Create 2 ethernet switches connected to routers of your choosing, and 2 host connected to them (click the icon below router icon to create switches.  Click the router icon and select host or PC to create a host machine).
+\item  Right click on n1 router and select configure (note you can show interface labels, by click view$>$show$>$interface names)
+
+\item Here you can change the network address if you wish on the interfaces.  At the top click services next to the router button.
+
+\item Deselect OSPFv2 and v3 and click babel.  Then click the wrench next to the babel button.
+\item On the tabs at the top click Startup/Shutdown.  We are going to create a startup command so babel automatically starts up.
+\item click the quagga sh command and then the trash can button.  We don't need this.
+\item Under the startup commands, enter \texttt{babeld -d1 -D -L babel.log eth0 eth1 eth2}, and then click the notepad with the plus symbol to add it.
+\item Keep clicking apply until your back at the canvas.
+
+\item Next, on n2 (with the switch and host connected to it) right click and go to the services configuration and do the same thing as n1.
+
+\item At the Files tab of the babel configuration, enter the file name \texttt{babeld.conf} and press the notepad plus.  In the text area box, enter \texttt{redistribute metric 128}.
+
+\item got to the Startup/shutdown tab and delete the quaaga command.
+\item Enter the startup commands box, \texttt{babeld -d1 -D -c babeld.conf -L babel.log eth0 eth1 eth2}, run babel on all the interfaces except the one connected to the switch.  Click apply when finished and return to canvas.
+
+\item configure n3 in the same way as n2 (the other router with switch).
+\item configure n4 the same as n1.
+\item After all of the routers 
+have been configure click the play button in the toolbar.
+\item Under the widgets drop down menu at the top, select observer widgets and IPv4 Routes.  This allows you to hover over a router and see the routing table.
+
+\item Ping the host at 10.0.12.10/24 (or whatever your ip address is) from the other host, ours is at 10.0.5.10.  This should be successful.
+
+
+\item Launch wireshark on interfaces from within CORE
+\item In CORE emulator, right click on one of the routers and click wireshark and select any interface (it does not matter right now).
+
+\item Click ok on the error message that pops up.
+
+\item Identifying the interface to capture on is tricky.  I have determined that each interface begins with the prefix veth.  These are the interfaces that corresponds to the virtual interfaces inside of CORE.  The number that follows corresponds to n$<$x$>$ name in CORE.  Then you should see .0.41, .1.41, etc...(or some other similar number  The first digit after the veth1.x is the interface on that node, so vth2.1.41, would correspond to n2, interface eth1. 
+
+\end{enumerate}
+
+\noindent Refer to Figure \ref{fig:wirednet4} for the final network configuration for Step 1.
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mtag2}
+
+\subsubsection{Step 2:  Setting up a Wireless Mesh Network Using C.O.R.E.}
+
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Stop the emulation and click file save.
+
+\item Add another router near n1.  This is going to be our gateway into the wireless network.
+
+\item  Next, lets add a wlan to the topology.  Click the switch/hub button in the left toolbar and Select the cloud icon.  Click to place it on the canvas.
+
+\item Right click the cloud and select configure.
+\item change the Ipv4 subnet to /24 and what ever network address you want.
+\item Next, click the EMANE tab under wireless, and select ieee802.11abg, under EMANE Models.  Note you can configure more customization for the wlan under emane options and ieee80211abg options.
+
+\item Next, create 3 or 4 more of these wlan's in the same way and give them different networks and subnets.
+\item Create links between the gateway router and all of the wlan's and you should see little radio antennas come out of the router.
+
+\item Create 2 to 3 more wireless routers and connect them to all of the wlans.  Create some host and connect them to a wlan as well.
+
+\item Configure all of the wireless routers for the babel service (just like we did on the other routers).
+\item Don't forget to change the startup command on n1 (you have an extra interface now going to the gateway).
+
+
+\item After all of the routers are configured start the emulation.  Try an ping one of the wireless host from a wired host.
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mytag1}
+
+\item Stop the emulation and on the 2 wireless routers (not the gateway for the wired network), click configure, services, the wrench icon for babel.
+\item Create a babeld.conf like we did for the wired routers, and add the command \texttt{redistribute metric 128}. (don't forget to add the .conf file using the notepad icon.
+
+\item Next change the startup command to \texttt{babeld -d1 -D -c babeld.conf -L babel.log eth0 eth1 eth2 eth3}
+
+\item Try to ping from the wired host to the wireless now.  Try from wireless host to wired.
+
+\item Lets experiment for a second with CORE's wireless emulation.  Begin a ping from the wired network host.
+
+\item Now start dragging your wireless client icon away from the wireless routers.  
+
+\item Now, ping again from the wired network and drag the wireless client as far away as you can get from the routers, but where it still has connectivity.  Move the 2 wireless routers as far away from the client your pinging as your can. 
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mytag2}
+
+\end{enumerate}
+
+\noindent Refer to Figure \ref{fig:wirelessnet4} for the final network diagram you should have by the end of Step 2.
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mtag3}
+
+\subsubsection{Step 3:  Adding A RIP network to the C.O.R.E Configuration}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Add 4 more routers with 3 with RIP enabled, the other with RIP and Babel enabled
+\item Add a switch and a host.
+\item Connect the host to the switch and the switch to one of the router with only RIP enabled. 
+\item Create a wireline connection from the RIP only router to the other router with Babel and RIP enabled.
+\item Connect the RIP networks as shown in \ref{fig:finalNet4}
+\item connect the Babel enabled router to all 4 WLAN's.
+\item On the wireless router with Babel and RIP, create a babeld.conf with redistribute metric like the other ones we did.
+\item Create the babel startup command \texttt{babeld -d1 -D -c babeld.conf -L babel.log eth1 eth2 eth3 eth4}
+
+\item Start the emulation
+\item Open a terminal on the Router with RIP and Babel
+\item Enter the command vtysh, to start the quagga shell
+\item Now enter conf t, to configure RIP.  Enter no router rip first and end, to clear out the default config.
+\item Next, enter conf t again, the commands are as follows (this will be dependant on your networks address that were auto assigned:
+
+\item conf t
+\item router rip
+\item version 2
+\item network 10.0.10.0/24
+\item redistribute kernel
+\item redistribute connected
+\item end
+
+\item On the other 3 routers running rip only, configure them the same, but without the redistribute kernel.  Also on the router connected to the host you need to do redistribute connected.
+\item The reason we are using redistribute kernel, is because we are running Babeld (daemon) so it's populating the kernel routing table.  Configuring babel through quagga, we would have been able to use the command redistribute RIP, and in RIP configuration redistribute babel.  
+
+\item The moment of truth, ping from the host on the RIP network to a host on the Wired Babel network.
+
+
+\end{enumerate}
+\noindent  Refer to Figure \ref{fig:finalNet4} for the final network configuration used in Exercise 4.
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mtag4}
+
+\paragraph{Step 4: Wireless Mesh and Link Quality Routing}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item In this step we are going to test the link quality routing that Babel and other wireless mesh routing protocols claim to do.
+\item First, up to this point we have not been using any of Babels optimizations for wired networks, link quality routing and split-horizon.  
+\item Edit the babel config files on the wired network routers to look similar to Figure \ref{fig:ex4WiredConfig}.
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mtag5}
+
+\item Next, change the babel config files on all of the wireless routers to look similar to Figure \ref{fig:ex4WirelessConfig}
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mtag6}
+
+\textbf{Note: You will need to configure your file based on interfaces your are running babel on.  The nodes that have wireless and wired interfaces will need to have wired specified as true or false based on what that interface is}
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mytag3}
+
+
+
+\item Next, start the emulation up (make sure you have the Widget Observer enabled for IPv4 Routing)
+\item Next, hover over the wireless AP that is running RIP and Babel.  Watch network 10.0.5.0/24. (you may need to keep removing the cursor from the node to refresh the table and move it back over top of it)
+
+\item  Take note of the routing table on the node that links the RIP network to the Babel wireless network.  Select a network, we choose the network in the wired babel network where the host was at (10.0.5.0/24).  
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mytag4}
+
+\item Start a ping from the host in the RIP network to a host in the wired Babel network. \textbf{Note: you need to go back through the RIP configuration again on all of the routers.  There is no way to save the configuration, so when the emulation is stopped the configuration is wiped}
+
+\item Start moving some of the nodes around and keep checking the routing table on the RIP/Babel node.
+
+\item Keep an eye on the ping running in the terminal you may temporarily loose connectivity while convergence is happening.
+
+
+\item Next, start a ping from the Wireless router running RIP and Babel to a host in the Babel wired network.
+
+\item Launch Wireshark on the router.  Selecting the interface is a bit tricky as the labels for the wireless interfaces do not seem to have any method behind their naming convention like the wired interfaces. Select an interface labeled b.....something.  There should be a bunch of packets on the interface from the ICMP we are sending.
+
+\item Continue capturing ICMP packets for a while.  Stop the capture and save/export the pcap file.
+
+\ExecuteMetaData[file/4_ex4/4_ex4_CBQMs]{mytag5}
+
+
+
+\end{enumerate}
+
+
+\end{document}

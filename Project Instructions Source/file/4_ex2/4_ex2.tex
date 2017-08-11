@@ -1,0 +1,78 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+\subsection{Exercise 2: Setting Up a Mesh Network \& Convergence Times  }
+\newlist{questions}{enumerate}{1}
+\setlist[questions,1]{label={$\circ$ Q\arabic* -}}
+\begin{itemize}
+
+
+\subsubsection{Step 0: Preparation}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+\item To begin this exercise create two more linked clones of the babel ubuntu Server VMs and 1 more linked clone of a client VM of your choosing(we used Ubuntu Desktop VMS).
+\item In the virtual network editor in VMWare we will need:
+\item 4 host-only vmnets w/o DHCP for VM1(Babel1).
+\item 3 host-only vmnets w/o DHCP for VM2(Babel2).
+\item 3 host-only vmnets w/o DHCP for VM3(Babel3).
+\item 4 host-only vmnets w/o DHCP for VM4(Babel4).
+\item You will also need 2 additional vmnets host-only w/o dhcp for the 2 linked Ubuntu Desktop VMs (or whatever you choose to be your clients).
+\item You will need a total of 16 vmnets
+\item On VM1 (Babel1) add 4 network adapters and select any of the custom vmnets so that they are different for each interface.
+\item Repeat the same procedure for VM4(Babel4).
+\item On VM2(Babel2) add 3 network adapters and assign different vmnets than the ones selected for VM1 and VM4.
+\item Repeat the Same procedures for VM3(Babel3).
+\item Connect all the links and assign static IPs to all of the interfaces as shown in Figure \ref{fig:ex2Net}.
+\item Now babeld should've been installed on the VM you created your linked clones from, verify that it's installed using the command \texttt{babeld --version} on all of your babel VMs.
+\item Make sure your client VMs can pinged there respective gateways (which should have been added when assigning static IPs to them)
+\end{enumerate}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mtag1}
+
+\subsubsection{Step 1: Convergence Time in Comparison to RIP } 
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+\item Next, we are going to start babel on the 4 VMs that are acting as routers.
+\item  On Babel1, from the terminal launch the command \texttt{sudo babeld -d1 -C 'redistribute metric 128' eth0 eth1 eth2}.  You should start to see some debug messages after a few seconds.
+\item On Babel2, start babel with the command \texttt{sudo babeld -d1 eth0 eth1 eth2}
+\item Repeat the same command as Babel1 on Babel4.
+\item Repeat the same command as Babel2 on Babel3.
+\item Next, we are going to test the convergence time of bringing a link down
+\item Start pinging UbuntuHost2 from UbuntuHost1.(should be successful at this point)
+\item Next, bring down interface eth2 on Babel4.
+\item Watch the ping on Host1 and record the time from when it pauses to when it begins to to sending request and receiving replys again.
+\end{enumerate}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag1}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag2}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+\item Next, launch wireshark on the link between Babel1 and Babel4 and the link between Babel1 and Babel3 (or which ever link is currently capturing the ICMP packets)
+\item Bring interface eth2 back up on Babel2 and watch the Wireshark capture on the link between Babel1 and Babel2.
+\end{enumerate}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag3}
+
+
+\subsubsection{Step 2: Routing Tables Affecting Traceroutes}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+\item Verify that traceroute is installed on Host1.
+\item  Do a trace route from Host1 to Host2 and record the path.
+\item Launch wireshark on the Link between Babel1 and Babel4, Babel1 and Babel3, Babel1 and Babel2, Babel2 and Babel4.
+\item Bring interface eth2 down on Babel4 again.
+\item Run traceroute again (you may need to keep trying until the convergence is complete.
+\end{enumerate}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag4}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag5}
+
+
+
+\subsubsection{Step 3: Compare and Contrasting RIP and Babel}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+\item Take a look back at Lab 2 particularly at how static routes were distributed in RIP.
+
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag6}
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag7}
+
+\item Another major difference between RIPv2 and Babel is their operating environment. RIP runs on Cisco IOS and we have Babel running on Ubuntu Servers.
+
+\item Babel works with both IPv4 and IPv6 by default. In RIP, you need to make separate configurations for IPv6 compatability.
+
+\ExecuteMetaData[file/4_ex2/4_ex2_CBQMs]{mytag8}
+
+\end{enumerate}
+\end{itemize}
+\end{document}

@@ -1,0 +1,67 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+\newlist{questions}{enumerate}{1}
+\setlist[questions,1]{label={$\circ$ Q\arabic* -}}
+\hfill \break
+\hl{\textbf{MAKE SURE TO PROVIDE NETWORK DIAGRAMs AND TABLEs CONTAINING INFORMATION ABOUT THE MACHINES INVOLVED (SUCH AS, IP ADDRESSES, MAC ADDRESSES, ETC.)}}
+
+\subsection{Exercise 1: Setting up Babel with a basic topology}
+
+\subsubsection{Introduction}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Babel is a unique distance-vector routing protocol of which is designed in such a way that it is known as "Speedy RIP". Babel's main selling point is that it is primarily a loop-avoiding protocol that was originally designed for wireless ad-hoc networks. However, it is still very stable and usable in wired networks. 
+
+\item Babel limits the frequency and duration of routing paths when a path is dropped. This being said, Babel is highly efficient at reconvergence in such a scenario, reconverging to an optimal configuration using \texttt{sequenced routes}. This is done based on the Bellman-Ford algorithm, using a technique called "Destination Sequenced Distance-Vector" (DSDV) routing. 
+
+\item Babel is a "double-stack" routing protocol. This means that Babel supports routing for both IPv4 and IPv6.
+
+\item Babel can automatically detect wireless and wired interfaces and adjust accordingly.
+
+\end{enumerate}
+
+\subsubsection{Step 0: Preparation (see Appendix A)}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Launch GNS3. Create the network topology as seen in figure \ref{fig:ex1Net} below.
+
+\ExecuteMetaData[file/4_ex1/4_ex1_CBQMs]{mtag1}
+
+\item For this lab we are going to configure Ubuntu Server VMs as routers. To do this, create linked clones of the VMs. We only need 3 (2 Ubuntu Servers as routers and 1 Ubuntu Desktop host) for this exercise but later we will need more.
+
+\item In VMWare make sure to add VMnets for each interface. For now, we only need 4.
+
+\end{enumerate}
+
+\subsubsection{Step 1: Babel Configuration} 
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Once we have set up the VMs and given their interfaces IPs, we can start Babel.
+
+\item On babel1 and babel2, start the Babel routing daemon with the \texttt{sudo babeld -d1 eth0} command.
+
+\ExecuteMetaData[file/4_ex1/4_ex1_CBQMs]{mytag1}
+
+\item Next, start Wireshark on the link between babel1 and babel2. You should be able to use the "babel" capture filter and see lots of packets.
+
+\ExecuteMetaData[file/4_ex1/4_ex1_CBQMs]{mytag2}
+\ExecuteMetaData[file/4_ex1/4_ex1_CBQMs]{mytag3}
+
+\end{enumerate}
+
+
+\subsubsection{Step 2: Babel Redistribution} 
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item On the Ubuntu Desktop Host, try pinging babel2. This will fail.
+
+\ExecuteMetaData[file/4_ex1/4_ex1_CBQMs]{mytag4}
+
+\item On babel1, stop the Babel daemon and start it again with this command: \texttt{sudo babeld -d1 -C "redistribute metric 128" eth0}. This tells babel to redistribute all routes with a metric of 128. 
+
+\item Try pinging babel2 from the host again. This time it should be successful. 
+
+\ExecuteMetaData[file/4_ex1/4_ex1_CBQMs]{mytag5}
+
+\end{enumerate}
+\end{document}

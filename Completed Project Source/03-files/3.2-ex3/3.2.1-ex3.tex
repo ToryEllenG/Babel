@@ -1,0 +1,109 @@
+\documentclass[main.tex]{subfiles}
+
+
+\begin{document}
+\subsection{Exercise 3: Configuring OpenWrt and Setting up a Babel Network on Physical routers}
+\subsubsection{Analysis \& Evidence }
+\paragraph{Step 0: Exercise 3 - Network Diagrams \& Tables}
+\hfill \break
+See Figure \ref{fig:net3} and Table \ref{fig:tbl3} in Section \ref{sec2}
+
+\paragraph{Step 1: Construct Your Network}
+\hfill \break
+
+\noindent We begin by flashing the dd-wrt router with the open-wrt firmware that was provided to us in the lab instructions. Doing this, we opened a browser at \texttt{192.168.1.1}, configured a password  of "admin", and allowed ssh access.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag101}
+
+Next, we changed the default gateway of the AP to be 192.168.10.1. This was done in the interfaces tab, under network in the open-wrt browser gui.  
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.3-ex3-QAs]{mytag1}
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag102}
+
+Then, under the network/wifi tab, we edited the configurations of the wireless interface. In particular, we set the operating frequency to channel 7, the Mode to 802.11s, and the SSID to OpenWrtBabel.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag103}
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.3-ex3-QAs]{mytag2}
+
+Then, we ssh'd to the new ip that we set on the AP. We were then presented with the open-wrt home page in the terminal as seen in the figure below.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag104}
+
+Now, to install the requird package, it was first required to connect the AP's WAN port to the internet. Then we installed and enabled the babel daemon. 
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag105}
+
+We now configured the firewall  at /etc/config/firewall as per the instructions in the figure \ref{fig:1-6} below. This allows the router to accept all babel traffic it sees.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag106}
+
+We also configured the wireless interface in the command line as seen in the figure \ref{fig:1-7} below. When configuring the wireless interface for 802.11s in the GUI of OpenWrt, there is no option to specify a mesh id. This is imperative, as multiple routers on the same mesh network have no other way of communicating rather than verifying that the mesh id, ssid, and channel are all the same.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag107}
+
+As seen in the figure \ref{fig:1-8} below, we have reloaded both the network and firewall configuration files to ensure that our changes have gone through.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag108}
+
+Next, we checked the routing table in \ref{fig:1-9}.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag109}
+
+
+
+Finally, we started the babel daemon in the shell with the \texttt{babeld -d1 br-lan} command as seen in figure \ref{fig:1-10}.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag110}
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag7}
+
+%%add more starting here
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.3-ex3-QAs]{mytag1}
+
+\paragraph{Step 2: Configuring a Babel Network Topology on multiple physical routers}
+\hfill \break
+Now that one physical router was set up to be enabled for babel, we then sought out to create a topology that included multiple physical routers running the same babel daemon. In our case, we only configured one more additional router. In our case, the router setup in the previous step (192.168.11.1) had a MAC ID of \texttt{30:85:a9:39:17:00}, while the new router to be configured (192.168.12.1) had a MAC ID of \texttt{30:85:a9:39:11:a0}.
+
+Next, on 192.168.11.1, we ssh'd in once more, and began a tcpdump packet capture on the \texttt{br-lan} interface. This capture was named: \texttt{babelDemo.pcap} and can be found in the list of attachments. See the figure \ref{fig:2-1} below for the capture command.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag201}
+
+Next, we started the babel daemon once again, on another ssh terminal to 192.168.11. At the same time, we had the newly configured AP connected to another machine, already running the babel daemon. Very shortly after the babel daemon was active on both machines, we began to see similar neighbor messages in the debug terminal of the babel daemon. An example is in figure \ref{fig:2-2} below.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag202}
+
+As seen in figure \ref{fig:2-2} above, the babel debug terminal shows the advertisement of the router's MAC ID, IPv6 address, and most importantly a route with the amount of cost it takes to get to the other router running the babel daemon, in both IPv4 and IPv6. 
+
+Shortly after seeing these neighbor messages, we initiated a ping from the 192.168.11.1 network to the 192.168.12.1, proving that we have connectivity in the mesh network from one node to another. See figure \ref{fig:2-3}.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag203}
+
+Next, we navigated to the browser on the machine connected to 192.168.11.1.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag204}
+
+As seen in the figure \ref{fig:2-4} above, under Associated stations, the MAC ID, as well as the IPv4 address is shown of the other router running babel daemon (192.168.12.1). In this field, there are also various details that are shown, such as the signal, noise, rx rate, and tx rate. 
+
+Finally, we checked the routing table of the 192.168.11.1 router after we had stopped the babel daemon. As seen in figure \ref{fig:2-6} below, the first result is the routing table when the babel daemon is still running (showing the 192.168.12.1 node being populated), and the second result shows the routing table immediately after the babel daemon is stopped, geting rid of the 192.168.12.1 node. 
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag206}
+
+Finally, we stopped the terminal that had the tcpdump running, and exported the capture so that it was viewable in wireshark. See figure \ref{fig:2-7} for an example of this capture, after it was filtered for babel packets.
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag207}
+
+This capture can be better viewed, as it is located in the list of attachments as \texttt{babelDemo.pcap}. The most important takeaway from figure \ref{fig:2-7} is that each of the babel packets belong to a particular ipv6 multicast group. Also, under the babel routing protocol layer, there are many other fields. These fields include important messages such as the nh (next hop), and all of the other information located in the routing table of the babel node advertising it. 
+
+\ExecuteMetaData[\FilePath/3.2-ex3/3.2.2-ex3-img]{mtag208}
+
+A demo of this step can be found at the following link:
+
+\url{https://www.youtube.com/watch?v=f1m22gHIzjs}
+
+\subsubsection{Key Learning/Takeaways:} 
+
+In this exercise, we learned that OpenWrt can be difficult to deal with. For example, when attempting to assign static IPs for 3 of the access points, only 2 of them actually took the address, while the last one could not be accessed, even after multiple resets. Other downfalls of using the OpenWrt firmware will be assesed in the osbp section. Despite this, we were eventually able to create a fully operational Babel mesh network through use of 802.11s and analyze a convesation between two mesh nodes. Using wireshark, we observed the type and order that babel sends messages in (Babel hello, request, update, ihu (i hear u), etc.) 
+
+
+\end{document}

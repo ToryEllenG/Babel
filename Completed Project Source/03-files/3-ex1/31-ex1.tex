@@ -1,0 +1,61 @@
+\documentclass[main.tex]{subfiles}
+
+
+\begin{document}
+\subsection{Exercise 1: Setting up Babel with a basic topology}
+\subsubsection{Analysis \& Evidence }
+\paragraph{Step 0: Exercise 1 - Network Diagrams \& Tables}
+\hfill \break
+
+\paragraph{Step 0: Draw your network diagram and fill out your network information table}
+\hfill \break
+See Figure \ref{fig:net1} and Table \ref{fig:tbl1} in Section \ref{sec2}
+
+\paragraph{Step 0: Preparation}
+\hfill \break
+\noindent To begin this exercise, we launched GNS3 and created the network topology shown in figure: \ref{fig:Ex1S1_1}
+ 
+\ExecuteMetaData[\FilePath/3-ex1/32-ex1-img]{mtag100}
+
+We also created several VMnets in VMware to accommodate the interfaces.
+
+%Screenshot of vmnets
+
+\ExecuteMetaData[\FilePath/3-ex1/33-ex1-QAs]{mytag1}
+
+\paragraph{Step 1: Babel Configuration}
+\hfill \break
+\noindent We begin this step by starting the Babel daemon on babel1 and babel2.
+
+\ExecuteMetaData[\FilePath/3-ex1/32-ex1-img]{mtag101}
+\ExecuteMetaData[\FilePath/3-ex1/33-ex1-QAs]{mytag1}
+
+Next, we started capturing on the link between babel1 and babel2.
+
+\ExecuteMetaData[\FilePath/3-ex1/32-ex1-img]{mtag102}
+\ExecuteMetaData[\FilePath/3-ex1/33-ex1-QAs]{mytag2}
+\ExecuteMetaData[\FilePath/3-ex1/33-ex1-QAs]{mytag3}
+
+\ExecuteMetaData[\FilePath/3-ex1/32-ex1-img]{mtag301}
+
+In Figure: \ref{fig:Ex1S3_2} we see the structure of a Babel update. NH is the next hop address for all of the networks being advertised. Router-id is how Babel identifies it's neighbors, it is a portion of the IPv6 address. The update includes information like the update interval time and most importantly the network prefix.
+
+\paragraph{Step 2: Babel Redistribution}
+\hfill \break
+\noindent We begin by trying (unsuccessfully) to ping babel2 from the UbuntuDesktop1.
+
+\ExecuteMetaData[\FilePath/3-ex1/33-ex1-QAs]{mytag4}
+
+Next, we restarted the Babel daemon on babel1 with the following command \texttt{sudo babeld -d1 -C "redistribute metric 128" eth0}
+
+Then, we are able to successfully ping babel2 from the UbuntuDesktop!
+
+\ExecuteMetaData[\FilePath/3-ex1/32-ex1-img]{mtag103}
+\ExecuteMetaData[\FilePath/3-ex1/33-ex1-QAs]{mytag5}
+
+\subsubsection{Key Learning/Takeaways:}
+\hfill \break
+\noindent In this exercise we learned how quick and easy it is to set up the babel routing protocol. It's easy to see how this would come in handy in an ad-hoc or mesh wireless setting. It takes a lot more effort to do the same thing with RIP and OSPF (as for as the number of commands necessary goes).
+
+
+\end{document}

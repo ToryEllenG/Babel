@@ -1,0 +1,159 @@
+\documentclass[main.tex]{subfiles}
+
+
+\begin{document}
+\subsection{Exercise 4: Babel/Rip Hybrid Mesh Architecture with CORE }
+\subsubsection{Analysis \& Evidence }
+\paragraph{Step 0: Preparation}
+\hfill \break
+See Figure \ref{fig:net4} in Section \ref{sec2} for our final network diagram for Exercise 4.
+
+\noindent We downloaded the CORE virtual machine and set it up according to step 0 in our lab instructions.
+
+\paragraph{Step 1: Setting Up Babel Enabled Wired Mesh Network Using C.O.R.E. }
+\hfill \break
+
+\noindent After opening CORE, we made the canvas size wider by selecting canvas size from the View drop down menu in the top tool bar.  Next, we clicked on the Router Icon in the left toolbar and placed 4 routers on our canvas.
+\noindent Next, we clicked on the link icon in the toolbar and began connecting all of the nodes in a mesh architecture, shown in Figure \ref{fig:Ex1-7}.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag106}
+\noindent We added two desktop host connected to switches and then connected the hubs to two separate networks.
+
+\noindent Next we began configuring babel on the nodes.  On n1, we right clicked on the icon and clicked configure to bring up the configuration menu shown in Figure \ref{fig:1}.  
+\noindent Next, we clicked on the services button \ref{fig:2}and then clicked on Babel and disabled OSPF.  We clicked the wrench Icon next to babel to bring up the start up configuration.
+We added the babel daemon command to the startup/shutdown command tab shown in Figure \ref{fig:3}. 
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag100}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag101}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag102}
+
+
+\noindent In the startup command section show in Figure \ref{fig:3}, we entered the command \texttt{babeld -d1 -L babel.log eth0 eth1 eth2}.  This allows babel to start
+automatically when we start the emulation.
+
+\noindent  We did the same thing on all of the other nodes.  On the nodes that have host connected to them, we had to create a configuration file and point the startup command to it.  
+\noindent Figure \ref{fig:4} shows we created a new file and added the command \texttt{redistribute metric 128}.  This tells babel to redistribute connected basically, or you can specify a specific network to redistribute.
+\noindent Figure \ref{fig:5} shows the startup command we had to use on the two nodes connected to host.
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag103}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag104}
+
+\noindent After we had the network fully connected and configured, we selected IPv4 routes under the Widgets drop down menu.  This allows us to simply hover over nodes and see their routing tables.
+
+\noindent We clicked the green play button to start the emulation.  We verified that the routing tables were getting populated by hovering over them and then pinged from one host to the other with success.
+
+\noindent  Next, we launched Wireshark on some of the nodes and observed babel packets. We did not spend much time analyze them, because they are the same from exercise 2.
+
+\noindent We stopped the emulation and saved the file as new\_sp.imn.
+
+
+
+\paragraph{Step 2: Setting up a Wireless Mesh Network Using C.O.R.E. }
+\hfill \break
+\noindent In this exercise we setup the same sort of configuration, but with wireless routers.
+\noindent First we added four WLAN, by select the hub/switch button in the left toolbar and then selecting the cloud Icon.
+\noindent Next, we right clicked on one of the clouds and selected configure shown in Figure \ref{fig:7}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag200}
+\noindent We changed the network and subnet of the WLAN and then clicked the EMANE tab.  \noindent Under the EMANE tab, We changed emane models to ieee80211abg shown in Figure \ref{fig:8} and clicked apply.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag201}
+\noindent We followed this same procedure for the other 3 WLANs, only changing their networks and subnets.
+
+\noindent Next, we added another router and connected it to the wired network.  Then we connected it to all four WLAN's, by dragging a link from it to the clouds.
+\noindent  We right clicked on the router and did the same configuration as we did in on the Babel Wired Mesh network.  We ran the babel protocol on all 5 interfaces(the wireline and the 4 WLAN).
+
+\noindent We edited the startup command for our node in the Wired network that is connected to the new node, to include the new interface we just created.
+
+\noindent We created 2 more Wireless routers and connected them in a mesh arrangement (we connected each router to all the WLAN's)
+\noindent We configured these routers to run Babel in the same way.
+
+\noindent Next, we added 4 Wireless clients, by selecting the laptop icon from the router toolbar and then we connected each of the laptops to separate WLAN's
+
+
+\noindent Next we started up the emulation.
+\noindent We tested if we could ping between the wireless clients and we were successful.  Next we tested connectivity between a wireless client and a host on the wired network.  This was unsuccessful.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.3-ex4-QAs]{mytag2}
+\noindent We stopped the emulation and created babeld.conf files on all of the wireless routers and added the \texttt{redistribute metric 128} command to the file.  Then we changed the startup command by adding the -c $<$Conf filename $>$ to the command to point the startup command to the configuration.
+\noindent We restarted the emulation.
+\noindent We tested that we could ping from a client in the wireless mesh to another client in the wireless mesh.
+\noindent Next, we tested that a wireless client could ping one of the host in the Wired network. Figure \ref{fig:9} shows that we can ping the wired host from the wireless host.
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag202}
+\noindent Figure \ref{fig:10} shows our final network setup after adding the wireless mesh network to the wired mesh network.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag203}
+
+\paragraph{Step 3: Adding A RIP network to the Babel Configuration}
+\hfill \break
+\noindent Next, we added 4 new routers to the topology.  On one router we enabled RIP and Babel.  We connected the router to all of the WLAN's.
+\noindent Next, we created a configuration file with the \texttt{redistribute metric 128}, like we did on the previous babel routers.  We created a startup command for all of the interfaces connected to the WLANs, like we did on previous routers pointing it to the configuration file.
+
+\noindent On the other 3 routers we enabled RIP and disabled OSPF.  We connected the 3 rip routers together and then connected the router running RIP and Babel via wireline to the RIP network.
+
+\noindent We added a switch and a host and connected them to the RIP router(n15). And then we started the emulation.
+
+\noindent On the Wireless Babel/Wireline RIP router, we opened a terminal and entered the quagga vty shell, by running the command \texttt{vtysh}.
+\noindent Then we entered the router config, by typing conf t.  Next, we type no router rip and end, to clear out the default RIP settings.
+\noindent Next, we entered the configuration commands listed in the lab instructions to configure RIP on the wireline interface and redistribute the kernel,connected, and babel.  Figure \ref{fig:Ex3-1}, shows our running configuration on node 12.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag300}
+
+\noindent I'm not sure we technically need to redistribute connected and babel.  The babel daemon is populating the kernel routing tables on all the nodes running babel, so we can probably get by with just redistributing the kernel.
+
+\noindent On the other 3 RIP routers we entered the RIP configuration and entered the networks we wanted to run RIP on. On one of the routers we entered redistribute connected, the one to be connected to a host.
+Figure \ref{fig:Ex3-2} shows the RIP configuration on node 13, which is connected to the gateway router connected to the wireless mesh.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag301}
+
+Figure \ref{fig:Ex3-3} shows the RIP configuration used for n15, which is the node we connected to a host.
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag302}
+
+\noindent Figure \ref{fig:Ex3-4} shows the routing table on n12.  The node is redistributing the kernel routes shown in the Figure, into RIP.  Evidence of this is shown in Figure \ref{fig:Ex3-5}, where n15's routing table shows RIP route entries for the routes that were listed as kernel entries on n12.
+
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag303}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag304}
+\noindent We pinged from the host in the RIP network to a host in the Wired Babel network.  Figure \ref{fig:Ex3-6} shows that we can successfully ping from the RIP network all the way to the Wired Babel Mesh network.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag305}
+
+\noindent We noticed sometimes it took about 30 seconds or more until we could ping, we guess because it was taking a little time to populate the routing tables. Also, there was some inconsistentcy with network 10.0.5.0/24.  Sometimes the route would disappear from the routing tables on the nodes running RIP.  It would return sometime later.  We have not been able to figure out the cause of this, because all of the other nodes running babel have no trouble pinging them at anytime.  When the route disappears from the RIP network, the babel networks still have connectivity.
+
+
+\paragraph{Step 4: Wireless Mesh and Link Quality Routing}
+\hfill \break
+\noindent In this step we experimented with Babel's routing based on the quality of the wireless links.
+\noindent We setup the new configuration files shown in the lab instructions on the nodes running babel.
+\noindent Next, we started the emulation up with the Widget Observer IPv4 routes enabled.  We hovered over n12 and watched the routing table, entry for 10.0.5.0/24, periodically removing and hovering over the node to refresh the routing table.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.3-ex4-QAs]{mytag3}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.3-ex4-QAs]{mytag4}
+\noindent We took note of the routing table on the wireless node connected to the RIP network.  Specifically we noted that the route to network 10.0.5.0/24 on N12 was 192.168.1.3 shown in Figure \ref{fig:Ex4-1}
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag400}
+
+\noindent Next, we experimented with moving the wireless nodes around until they were spaced out, making sure the node with the interface that was listed in the routing table of N12 was the farthest away.  We kept an eye on the routing table for N12 by enabling the Widget Observer IPv4 Routing and hovering over the node when ever we made location changes.  Figure \ref{fig:Ex4-2} shows how we had the wireless nodes spaced out to get the route to switch.
+
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag401}
+\noindent This took quite a bit of experimentation to get the nodes just right to where it switched in the routing table.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.3-ex4-QAs]{mytag5}
+\noindent Figure \ref{fig:Ex4-3} shows that the route entry for the network 10.0.5.0/24 switched from 192.168.1.3 to 10.10.10.1.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag402}
+
+\noindent Because the connectivity between network 10.0.3.0/24 and 10.0.5.0/24 where a bit spotty, we created a video demo to show that we did have connectivity at some points.  The video can be viewed at \href{https://www.youtube.com/watch?v=C7KTfBb3bqo}{RIP Babel Demo}.
+
+
+\noindent Next, we pinged the host at 10.0.5.10 from n12 (the router running Babel and RIP)
+\noindent We started Wireshark on the router running Babel and RIP and identified an interface that we believed was on the router (this was a bit hard to determine, but it had more packets on it than some of the other ones).
+
+\noindent We captured ICMP messages for a while and then stopped the capture and saved the pcap file as Ex4Step4-ICMPLinkChange.pcap included in \ref{sec4} as a file attachment.
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.2-ex4-img]{mtag403}
+\ExecuteMetaData[\FilePath/3.3-ex4/3.3.3-ex4-QAs]{mytag6}
+
+
+
+
+\subsubsection{Key Learning/Takeaways:} 
+\hfill \break
+\noindent The takeaways from this exercise are that Babel seems to be easier to setup than RIP.  You simply just have to tell it to start and what interface to run on at a bare minimum.  RIP requires manual configuration for IPv6, while Babel does both IPv4 and IPv6 by default.  Babel is more efficient at routing in wireless networks than it is in wired networks.\\
+
+\noindent Babel is capable of switching routes on the fly based on the quality of the wireless link, without any delays or convergence delays.  It seems that the convergence times when a link goes down is not quicker than rip as it seemed to be in Lab 2, but this could be because we have a more complicated network than in Lab 2.
+
+
+
+
+\end{document}

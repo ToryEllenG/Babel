@@ -1,0 +1,50 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+\subsection{Exercise 5: Security Issues with Babel Protocol}
+\newlist{questions}{enumerate}{1}
+\setlist[questions,1]{label={$\circ$ Q\arabic* -}}
+\begin{itemize}
+
+
+\subsubsection{Step 0: Introduction}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item While Babel is a lightweight and robust routing protocol that can prove to be highly effective in certain network configurations, it is not a protocol that is inherently secure. This is due to the large versatility and applicability of the protocol, being used in wired-wireless hybrid networks, lossy/unstable radio networks, etc. 
+
+\item As stated in RFC 6126, any attacker can attract data traffic by advertising routers with a low metric. This being said, Babel also sends a lot of information to the entire routing domain when adveristing the relevant information. This could allow an attacker to determine the exact location of the node with decent accuracy / precision. 
+
+
+\item Because of the insecure nature of the Babel protocol, there are many potential attacks that could passively, or actively be performed on a Babel Enabled Network. Some of these include:
+
+\begin{enumerate}
+    \item Active attacks:
+        \subitem \textbf{Routing table poisoning}
+        \subsubitem Lower metric attack
+        \subsubitem Higher seqno attack
+        \subsubitem Replay attack
+        \subsubitem Amplification through routing table poisoning
+        \subitem \textbf{Amplification due to requests}
+        \subitem \textbf{Covert channel}
+    \item Passive Attacks:
+        \subitem \textbf{Stable node identifiers}
+\end{enumerate}
+
+
+
+\end{enumerate}
+
+
+\subsubsection{Step 1: Mitigations and Solutions } 
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item To avoid some of the active attacks that are possible to implement in a babel enabled network, there is a cryptographic authentication mechanism that offers replay protection, defined in RFC 7298 %%cite this
+
+This RFC deals with "Babel Hashed Message Authentication Code (HMAC) Cryptographic Authentication.
+
+\item Mentioned earlier, as a double-stack procotol, Babel is capable of carrying traffic over both IPv4 and IPv6. This being said, when using IPv6, Babel packets are ignored unless they are sent via link-local IPv6 address. Because of this, reasonable protection is provided against altered or spoofed Babel packets from the global internet. This inherent protection is not the case in IPv4 however, more common. 
+
+\end{enumerate}
+
+     
+\end{itemize}
+\end{document}

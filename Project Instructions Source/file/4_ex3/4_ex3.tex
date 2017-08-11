@@ -1,0 +1,123 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+\subsection{Exercise 3 - Setting up Babel Topology with physical routers}
+\newlist{questions}{enumerate}{1}
+\setlist[questions,1]{label={$\circ$ Q\arabic* -}}
+\begin{itemize}
+
+
+\subsubsection{Step 0: Preparation (Installing Open-Wrt, preliminary physical topology)} 
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item This exercise will involve the use of multiple access points flashed with the open-wrt firmware.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag1}
+
+\item To prepare, flash your access point using the 30-30-30 method. 
+
+\item Next, if the open-wrt frame work is not installed, download the firmware provided in the attachments. Make sure that the access point is connected via wire-line to the station that you have downloaded the firmware on.
+
+\item In the Administration tab under the DD-WRT settings, select the "Firmware Upgrade" subtab. Set the first field to "Don't reset", navigate to the firmware file you just downloaded, and click \texttt{Upgrade}. 
+
+\item This step will take a while, so wait patiently until the entire process is done. Once completed, provide proof that you can access the open-wrt homepage.
+
+\item When asked to enter credentials, change the new credentials to username: "root", and password: "admin" without quotes. Be sure to enable ssh with these new credentials, as we there will be much configuration from the command line.
+
+\end{enumerate}
+
+
+\subsubsection{Step 1: Flashing and configuring  Babel on Open-wrt} 
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Now that you have a router flashed with open-wrt, we will now begin to configure the openWRT router through the browser and later the terminal. 
+
+\item In a browser, navigate to the default address of \texttt{192.168.1.1}, and navigate to the "Interfaces" tab under Network.
+
+\item Here, you will see an interface named "br-lan". Edit the interface so that the default address is \texttt{192.168.10.1}. Save and apply the changes. Note that you may have to exit out of the browser and navigate to the new address that you just assigned. This may take a few tries.
+
+\item Now, under the Network / wifi tab, you will see an interface known as "OpenWRT". Edit this interface, and change the SSID of the network to be \texttt{OpenWRTBabel}, the Mode to "802.11s", and the Channel to "7". Make sure to Save and Apply. When returned to the Wireless Overview tab, be sure to enable the interface.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag2}
+
+\item Now, open a terminal, and ssh to the open-wrt router with the credentials you just configured. 
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag12}
+
+\item Once connected, install the babel daemon with the following command:
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag13}
+
+\item If this command does not work, be sure that the package manager is up to date by updating it with:
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag16}
+
+\item Also make sure that the router is connected to the Internet in order to download the packages.
+
+\item Let us set up the babel daemon to start up on boot on the wireless interface.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag14}
+
+\item Provide proof that you have ssh'd to the open-wrt router and have installed the babel daemon.
+
+\item Now that you have gone through the basic babel configurations, we will now configure the firewall on the router to allow babel traffic to flow through. 
+
+\item In the \texttt{/etc/config/firewall} file on the router, add the following lines at the end of the file. You will have to use the vi text editor to do so.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mtag1}
+
+\item While OpenWrt supports the "802.11s" standard directly in the gui, it does not actually provide a place to specify the mesh id. To do so, edit the \texttt{/etc/config/wireless} file on the router, once again with vi, and add the following line at the end of the last interface of the file.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag19}
+
+
+\item Be sure to restart the firewall and network adapter to ensure that the changes take place.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag18}
+
+
+\item Back in the terminal ssh'd to the router, run the following command:
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag17}
+
+\item The previous command will allow you to test that the babel daemon is up and able to be ran on the br-lan interface. Stop this when you start to see messages.
+
+
+\end{enumerate}
+
+\subsubsection{Step 2: Configuring a Topology with multiple Babel enabled Physical routers.}
+\begin{enumerate}[noitemsep,label=$\bullet$,leftmargin=20mm,labelsep=0.5cm]
+
+\item Using the same method in step 1 used to configure the 192.168.10.1 router, configure 3 more routers with addresses, 192.168.11.1, 192.168.12.1, and 192.168.13.1. This configuration will involve the installation of the babel daemon.
+
+\item We will now use these newly configured routers to create a mesh network architecture. 
+
+\item Record all of the MAC addresses of the routers. 
+
+\item Now that all of the MAC addresses had been recorded, for each one of the access points, change the type of connection under the wifi tab from "Access Point" to "802.11s", as done before. Be sure to edit each of the configurations of the routers to include the mesh id of "testMesh" in the /etc/config/wireless file, as done before.
+
+\item Before you go any further, ensure that you have a station for each of the routers so that they are available for ssh connectivity. Also, ensure that you have installed tcpdump on each of the routers, as the OpenWrt framework does not support wireshark directly.
+
+\item On a terminal for each of the stations, launch tcpdump on the br-lan interface.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag21}
+
+\item Make sure that the file you're writing to is unique for each capture, not just "babelTraffic.pcap".
+
+\item Now that the mesh network is configured, begin to run the babel daemon on each of the routers, in a similar manner to the method in step 1.
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag17}
+
+
+\item Find each of the routes of each of the routers with:
+
+\ExecuteMetaData[file/4_ex3/4_ex3_CBQMs]{mytag20}
+
+\item Make sure that you see the debug messages in each of the babel daemon terminals. Now, open wireshark on each of the stations connected to the babel enabled routers. At first, there will only be debug messages that advertise the respective routers information. Soon, you will begin to see neighbor packets, along with an ipv6 and ipv4 address, next hop, and much more. Be sure to check the routing table again, and compare it with the routing tables before the babeld daemon was run. 
+
+\item With wireshark still running, execute a ping from the 192.168.10.1 router to the others, and vice versa. You should now have full connectivity within a mesh network! Stop the captures on each of the tcpdumps, and export them to be viewable in wireshark.
+
+
+\end{enumerate}
+     
+\end{itemize}
+\end{document}
