@@ -16,6 +16,6 @@ https://youtu.be/f1m22gHIzjs
 
 Joey Arbogast
 
-Troy Gamboa
+Tory Gamboa
 
 Isaac Sumner
